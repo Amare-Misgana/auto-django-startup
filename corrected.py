@@ -12,6 +12,100 @@ class AutoDjango:
         self.app_list = []
         self.static_dirs = ["css", "js", "images", "videos"]
         self.register_app = None
+        self.base = """<!DOCTYPE html>  
+<html>  
+<head>
+    <meta charset=\"UTF-8\">
+    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+    <title>{% block title %}Base{% endblock %}</title>  
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    {% block head %} {% endblock %}  
+</head>  
+<body>  
+    {% block content %}{% endblock %}  
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block script %}{% endblock %}
+</body>  
+</html>  
+"""
+    def create_base_html(self):
+        with open(os.path.join(self.project_dir, "templates", "base.html"), "w") as base_html:
+            base_html.write(self.base)
+
+          
+    def edit_file(self, file, target, values, folder, insert_point=None, position="bottom", concatenate=False, insert=False):
+        file_path = os.path.join(self.project_dir, folder, file)
+
+        with open(file_path, "r") as file:
+            files = file.readlines()
+
+        files_list = []
+        if concatenate:
+            files_list += files
+            files_list += ["\n"]
+            files_list += values
+        else:
+            for line_number, line in enumerate(files):
+                if target in line:
+                    if insert and insert_point:
+                        if insert_point in line:
+                            index = line.index(insert_point) + len(insert_point)
+                            line = line[:index] + "".join(values) + line[index:]
+                            files_list.append(line)
+                    else:
+                        if position == "top":
+                            files_list.extend(f"{value}\n" for value in values)
+                            files_list.append(line)
+                        elif position == "bottom":
+                            files_list.append(line)
+                            files_list.extend(f"{value}\n" for value in values)
+                        elif position == "left":
+                            for value in values:
+                                files_list.append(f"{value} {line}")
+                        elif position == "right":
+                            files_list.append(f"{line.strip()} {' '.join(values)}\n")
+                else:
+                    files_list.append(line)
+
+        with open(file_path, "w") as file:
+            file.writelines(files_list)
+    def get_file(self, file, start, end, folder, round_in=False):
+        file_path = os.path.join(self.project_dir, folder, file)
+        with open(file_path, "r") as f:
+            files = f.readlines()
+            start_point = None
+            end_point = None
+            
+            for line_number, line in enumerate(files):
+                if start in line:
+                    start_point = line_number
+                if start_point is not None and end.strip() in line.strip():
+                    end_point = line_number
+                    break
+            
+            if start_point is not None and end_point is not None:
+                target_list = [value.strip() for value in files[start_point:end_point + 1]]
+                if round_in:
+                    new_list = target_list[1:-1]
+                    return new_list
+                else:
+                    return target_list
+            else:
+                return f"Couldn't find the start: '{start}' or end: '{end}' in the file."
+    def remove_value(self, lists, value_to_remove):
+        for remove_value in value_to_remove:
+            while remove_value in lists: 
+                lists.remove(remove_value)
+        return lists
+
+    def run_cmd(self, cmd):
+        try:
+            subprocess.run(cmd, check=True)
+        except subprocess.CalledProcessError as e:
+            print(f"Command failed with error: {e}")
+        except Exception as e:
+            print(f"An unexpected error occurred: {e}")
         
     def make_dir(self, type=None, registration_folder=None):
         if type == "static":
