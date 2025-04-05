@@ -342,7 +342,7 @@ def set_project(obj):
     extra_apps(obj)
     result_media = inputs("Do you want to have a media in your project. (y/n): ", yes, no)
     reslut_regis = inputs("Do you want to have a registration in your project. (y/n): ", yes, no)
-    print("\nCreating Vertual Enviroment...\n")
+    print("\nCreating Virtual Enviroment...\n")
     # ================ Execution ================
     obj.run_venv()
     obj.run_cmd(["django-admin", "startproject", obj.project_name, "."])
