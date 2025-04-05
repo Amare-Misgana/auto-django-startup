@@ -360,6 +360,8 @@ def set_project(obj):
     
     set_registration(obj, reslut_regis)
     set_media(obj, result_media)
+
+    print("Thank you for using my code (Amare) 😊")
     
 
 
@@ -369,4 +371,5 @@ def set_project(obj):
 django = AutoDjango("example")
 
 set_project(django)
+
 
