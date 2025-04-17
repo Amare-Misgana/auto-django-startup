@@ -197,7 +197,7 @@ class AutoDjango:
         else:
             subprocess.run(["source", "venv/bin/activate"], shell=True)
             pip_path = "venv/bin/pip"
-        self.run_cmd(["pip", "install", "django"])
+        self.run_cmd([pip_path, "install", "django"])
         download_package = inputs("Do you want to install packages: ", yes, no)
         if download_package:
             while True:
