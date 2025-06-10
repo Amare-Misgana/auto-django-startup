@@ -13,22 +13,48 @@ class AutoDjango:
         self.static_dirs = ["css", "js", "images", "videos"]
         self.register_app = None
         self.base = """<!DOCTYPE html>  
-<html>  
-<head>
-    <meta charset=\"UTF-8\">
-    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
-    <title>{% block title %}Base{% endblock %}</title>  
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    {% block head %} {% endblock %}  
-</head>  
-<body>  
-    {% block content %}{% endblock %}  
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    {% block script %}{% endblock %}
-</body>  
-</html>  
-"""
+                        <html>  
+                        <head>
+                            <meta charset=\"UTF-8\">
+                            <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+                            <title>{% block title %}Base{% endblock %}</title>  
+                            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+                            {% block head %} {% endblock %}  
+                        </head>  
+                        <body>  
+                            {% block content %}{% endblock %}  
+                            <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+                            <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+                            {% block script %}{% endblock %}
+                        </body>  
+                        </html>  
+                    """
+    def create_sweetalert_html(self):
+        with open(os.path.join(self.project_dir, "templates", "fragments", "messages.html"), "w") as sweet_alert:
+            sweet_alert.write("""
+        <!-- SweetAlert CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+        <!-- SweetAlert JS -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+        <!-- Messages Loop with SweetAlert -->
+        {% if messages %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    {% for message in messages %}
+                        Swal.fire({
+                            icon: '{{ message.tags }}',  // success, error, warning, info, etc.
+                            title: '{{ message }}',
+                            showConfirmButton: false,
+                            timer: 5000  // Auto-close after 5 seconds
+                        });
+                    {% endfor %}
+                });
+            </script>
+        {% endif %}
+
+    """)
     def create_base_html(self):
         with open(os.path.join(self.project_dir, "templates", "base.html"), "w") as base_html:
             base_html.write(self.base)
@@ -360,6 +386,7 @@ def set_project(obj):
     
     set_registration(obj, reslut_regis)
     set_media(obj, result_media)
+    obj.create_sweetalert_html()
 
     print("Thank you for using my code (Amare) 😊")
     

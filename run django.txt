@@ -1,3 +1,3 @@
 @echo off
-python "C:\Users\Amare\global-libs\django automation\corrected.py"
+python "C:\Users\codea\django_auto\auto-django-startup\corrected.py"
 pause
